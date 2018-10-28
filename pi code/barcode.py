@@ -1,6 +1,10 @@
 #!/usr/bin/python
 
 import sys
+from firebase import firebase
+import json
+
+firebase = firebase.FirebaseApplication('https://rpi-barcode.firebaseio.com/', None)
 
 def barcode_reader():
     """Barcode code obtained from 'brechmos' 
@@ -63,13 +67,23 @@ def barcode_reader():
     return ss
 
 
+def update_firebase(name,ss):
+    data = { "Code": ss,"Name": name}
+    firebase.post('/Students', data)
+
+
 if __name__ == '__main__':
     file=open("barcodes.text","w")
     try:
         while True:
+		    name = raw_input("Enter students name: ")
             print("Please scan barcode: ")
             ss = barcode_reader()
-            file.write(ss+",")
+			
+			
+            file.write("[" + name + ":" + ss + "]")
+			update_firebase(name,ss)
+			
     except KeyboardInterrupt:
         pass
     file.close()
