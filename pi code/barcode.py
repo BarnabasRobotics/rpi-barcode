@@ -64,10 +64,12 @@ def barcode_reader():
 
 
 if __name__ == '__main__':
+    file=open("barcodes.text","w")
     try:
         while True:
-            print("-----" * 5)
-            print(barcode_reader())
-            print("-----" * 5 + "\n")
+            print("Please scan barcode: ")
+            ss = barcode_reader()
+            file.write(ss+",")
     except KeyboardInterrupt:
         pass
+    file.close()
