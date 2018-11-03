@@ -89,20 +89,26 @@ def add_Student():
     print("Please scan barcode: ")
     ss = barcode_reader()
     buff = raw_input()
-    file.write("["+ name +":"+ ss +"]")
     update_firebase(name,ss,grade)
-    del name
-    return
 
-def show_DataBase():
+def get_DataBase():
     result = firebase.get('/Student',None)
-    print ''
-    print result
+    return result
 
 def remove_Student():
+    print("Please scan barcode of student you would like to remove: ")
+    ss = barcode_reader()
+    buff = raw_input()
+    firebase.delete('/Student',ss)
     print 'Removed'
 
 def update_Student():
+    #Could update one value or create a new user with same code
+    # Possible to use create_Student instead
+    print("Please scan barcode of student you would like to Update: ")
+    ss = barcode_reader()
+    buff = raw_input()
+
     print 'Updated'
 
 def find_Student():
@@ -112,6 +118,19 @@ def find_Student():
     print ''
     studentInfo = firebase.get(('/Student/'+ss),None)
     print studentInfo
+
+def parse_Json():
+    """TODO: Find a better way to parse it"""
+
+    data = firebase.get('',None)
+    for key in data['Student']:
+        print key
+
+def write_To_File():
+    data = firebase.get('',None)
+    for key in data['Student']:
+        file.write(key+',')
+    print 'File Updated'
 
 if __name__ == '__main__':
     file=open("barcodes.text","a")
@@ -124,6 +143,8 @@ if __name__ == '__main__':
         print('(G)et list of students')
         print('(F)ind student')
         print('(U)pdate student info')
+        print('(P)arse the current Json file')
+        print('(W)rite to file')
         print('(D)elete a student')
         print('(E)nd Program')
         print('----------'*3)
@@ -132,11 +153,16 @@ if __name__ == '__main__':
         if(char is 'a' or char is 'A'):
             add_Student()
         elif(char is 'g' or char is 'G'):
-            show_DataBase()
+            print ''
+            print get_DataBase()
         elif(char is 'f' or char is 'F'):
             find_Student()
         elif(char is 'u' or char is 'U'):
             update_Student()
+        elif(char is 'p' or char is 'P'):
+            parse_Json()
+        elif(char is 'w' or char is 'W'):
+            write_To_File()
         elif(char is 'd' or char is 'D'):
             remove_Student()
         elif(char is 'e' or char is 'E'):
