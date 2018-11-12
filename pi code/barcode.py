@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
 import sys
-from firebase import firebase
 import json
+from Tkinter import *
+from firebase import firebase
 
 
 
@@ -93,6 +94,7 @@ def add_Student():
 
 def get_DataBase():
     result = firebase.get('/Student',None)
+    Text(root,result).pack()
     return result
 
 def remove_Student():
@@ -123,6 +125,10 @@ def parse_Json():
     """TODO: Find a better way to parse it"""
 
     data = firebase.get('',None)
+    parsed_json = json.loads(data)
+
+    #print(parsed_json['Name'])
+
     for key in data['Student']:
         print key
 
@@ -132,43 +138,41 @@ def write_To_File():
         file.write(key+',')
     print 'File Updated'
 
+def printToGUI():
+    with open("barcodes.text","r")as f:
+        Label(root,text=f.read()).pack()
+
 if __name__ == '__main__':
+    root = Tk()
+    root.title("Barcode Reader")
+
     file=open("barcodes.text","a")
     char = ''
 
-    while char != 'e':
-        print('----------'*3)
-        print('Menu')
-        print('(A)dd a student')
-        print('(G)et list of students')
-        print('(F)ind student')
-        print('(U)pdate student info')
-        print('(P)arse the current Json file')
-        print('(W)rite to file')
-        print('(D)elete a student')
-        print('(E)nd Program')
-        print('----------'*3)
-        char = raw_input()
-        print('User has pressed: '+char)
-        if(char is 'a' or char is 'A'):
-            add_Student()
-        elif(char is 'g' or char is 'G'):
-            print ''
-            print get_DataBase()
-        elif(char is 'f' or char is 'F'):
-            find_Student()
-        elif(char is 'u' or char is 'U'):
-            update_Student()
-        elif(char is 'p' or char is 'P'):
-            parse_Json()
-        elif(char is 'w' or char is 'W'):
-            write_To_File()
-        elif(char is 'd' or char is 'D'):
-            remove_Student()
-        elif(char is 'e' or char is 'E'):
-            char = 'e'
-            print 'Program perminated'
-        else:
-            print 'Invalid charater entered!'
+    addButton = Button(root,text="Add Student",command=add_Student)
+    addButton.pack()
+
+    getButton = Button(root,text="Get Database",command=get_DataBase)
+    getButton.pack()
+
+    findButton = Button(root,text="Find Student",command=find_Student)
+    findButton.pack()
+
+    updateButton = Button(root,text="Update Student",command=update_Student)
+    updateButton.pack()
+
+    deleteButton = Button(root,text="Delete Student",command=remove_Student)
+    deleteButton.pack()
+
+    showButton = Button(root,text="Show students",command=printToGUI)
+    showButton.pack()
+
+    writeButton = Button(root,text="Write To File",command=write_To_File)
+    writeButton.pack()
+
+    endButton = Button(root,text="End Program",command=root.destroy)
+    endButton.pack()
+
 
     file.close()
+    root.mainloop()
