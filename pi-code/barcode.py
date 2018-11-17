@@ -7,7 +7,7 @@ from firebase import firebase
 
 
 
-firebase=firebase.FirebaseApplication('https://rpi-barcode.firebaseio.com/',None)
+firebase = firebase.FirebaseApplication('https://rpi-barcode.firebaseio.com/', None)
 
 def barcode_reader():
     """Barcode code obtained from 'brechmos'
@@ -77,10 +77,10 @@ def barcode_reader():
                         ss += hid[int(ord(c))]
     return ss
 
-def update_firebase(name,ss,grade):
-    data = {"Name":name, 'Grade':grade}
+def update_firebase(name, ss, grade):
+    data = {"Name" : name, "Grade" : grade}
     sent = json.dumps(data)
-    firebase.put('','Student/'+ss,data)
+    firebase.put('', 'Student/' + ss, data)
 
 def add_Student():
     print("Enter student's name: ")
@@ -90,41 +90,41 @@ def add_Student():
     print("Please scan barcode: ")
     ss = barcode_reader()
     buff = raw_input()
-    update_firebase(name,ss,grade)
+    update_firebase(name, ss, grade)
 
 def get_DataBase():
-    result = firebase.get('/Student',None)
-    Text(root,result).pack()
+    result = firebase.get('/Student', None)
+    Text(root, result).pack()
     return result
 
 def remove_Student():
-    print("Please scan barcode of student you would like to remove: ")
+    print('Please scan barcode of student you would like to remove: ')
     ss = barcode_reader()
     buff = raw_input()
-    firebase.delete('/Student',ss)
+    firebase.delete('/Student', ss)
     print 'Removed'
 
 def update_Student():
     #Could update one value or create a new user with same code
     # Possible to use create_Student instead
-    print("Please scan barcode of student you would like to Update: ")
+    print('Please scan barcode of student you would like to Update: ')
     ss = barcode_reader()
     buff = raw_input()
 
     print 'Updated'
 
 def find_Student():
-    print("Please scan barcode: ")
+    print('Please scan barcode: ')
     ss = barcode_reader()
     buff = raw_input()
     print ''
-    studentInfo = firebase.get(('/Student/'+ss),None)
+    studentInfo = firebase.get(('/Student/' + ss), None)
     print studentInfo
 
 def parse_Json():
-    """TODO: Find a better way to parse it"""
+    '''TODO: Find a better way to parse it;'''
 
-    data = firebase.get('',None)
+    data = firebase.get('', None)
     parsed_json = json.loads(data)
 
     #print(parsed_json['Name'])
@@ -133,14 +133,14 @@ def parse_Json():
         print key
 
 def write_To_File():
-    data = firebase.get('',None)
+    data = firebase.get('', None)
     for key in data['Student']:
-        file.write(key+',')
+        file.write(key + ',')
     print 'File Updated'
 
 def printToGUI():
-    with open("barcodes.text","r")as f:
-        Label(root,text=f.read()).pack()
+    with open("barcodes.text", "r") as f:
+        Label(root, text = f.read()).pack()
 
 if __name__ == '__main__':
     root = Tk()
@@ -149,28 +149,28 @@ if __name__ == '__main__':
     file=open("barcodes.text","a")
     char = ''
 
-    addButton = Button(root,text="Add Student",command=add_Student)
+    addButton = Button(root, text = "Add Student", command = add_Student)
     addButton.pack()
 
-    getButton = Button(root,text="Get Database",command=get_DataBase)
+    getButton = Button(root, text = "Get Database", command = get_DataBase)
     getButton.pack()
 
-    findButton = Button(root,text="Find Student",command=find_Student)
+    findButton = Button(root, text = "Find Student", command=find_Student)
     findButton.pack()
 
-    updateButton = Button(root,text="Update Student",command=update_Student)
+    updateButton = Button(root, text = "Update Student", command = update_Student)
     updateButton.pack()
 
-    deleteButton = Button(root,text="Delete Student",command=remove_Student)
+    deleteButton = Button(root, text = "Delete Student", command = remove_Student)
     deleteButton.pack()
 
-    showButton = Button(root,text="Show students",command=printToGUI)
+    showButton = Button(root, text = "Show students", command = printToGUI)
     showButton.pack()
 
-    writeButton = Button(root,text="Write To File",command=write_To_File)
+    writeButton = Button(root, text = "Write To File",command = write_To_File)
     writeButton.pack()
 
-    endButton = Button(root,text="End Program",command=root.destroy)
+    endButton = Button(root, text = "End Program", command = root.destroy)
     endButton.pack()
 
 
