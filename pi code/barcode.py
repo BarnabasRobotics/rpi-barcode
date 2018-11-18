@@ -3,6 +3,7 @@
 import sys
 import json
 from Tkinter import *
+import Tkinter as tk
 from firebase import firebase
 
 
@@ -82,7 +83,7 @@ def update_firebase(name,ss,grade):
     sent = json.dumps(data)
     firebase.put('','Student/'+ss,data)
 
-def add_Student():
+def add_Student(root):
     print("Enter student's name: ")
     name = raw_input()
     print("Enter student's Grade: ")
@@ -94,7 +95,7 @@ def add_Student():
 
 def get_DataBase():
     result = firebase.get('/Student',None)
-    Text(root,result).pack()
+    insert("end",result)
     return result
 
 def remove_Student():
@@ -142,37 +143,117 @@ def printToGUI():
     with open("barcodes.text","r")as f:
         Label(root,text=f.read()).pack()
 
-if __name__ == '__main__':
-    root = Tk()
-    root.title("Barcode Reader")
 
+class SampleApp(tk.Tk):
+    def __init__(self):
+        tk.Tk.__init__(self)
+        self._frame = None
+        self.switch_frame(StartPage)
+
+    def switch_frame(self, frame_class):
+        """Destroys current frame and replaces it with a new one."""
+        new_frame = frame_class(self)
+        if self._frame is not None:
+            self._frame.destroy()
+        self._frame = new_frame
+        self._frame.pack()
+
+class StartPage(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        tk.Label(self, text="Welcom to the main
+menu").pack(side="top", fill="x", pady=10)
+        tk.Button(self, text="Add a Student",command=lambda:
+master.switch_frame(AddStudent)).pack()
+
+        tk.Button(self, text="Remove a Student",command=lambda:
+master.switch_frame(RemoveStudent)).pack()
+
+        tk.Button(self, text="Find Student",command=lambda:
+master.switch_frame(FindStudent)).pack()
+
+        tk.Button(self, text="Offline Mode",command=lambda:
+master.switch_frame(OfflineMode)).pack()
+
+        getButton = Button(self,text="Get Database",command=get_DataBase)
+        #getButton.pack()
+
+        updateButton = Button(self,text="Update Student",command=update_Student)
+        #updateButton.pack()
+
+        showButton = Button(self,text="Show students",command=printToGUI)
+        #showButton.pack()
+
+        writeButton = Button(self,text="Write To File",command=write_To_File)
+        #writeButton.pack()
+
+        #endButton = Button(self,text="End Program",command=app.destroy).pack()
+
+class AddStudent(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+
+        tk.Label(self, text="Name").pack(side="top", fill="x", pady=10)
+        e1 = Entry(self).pack()
+
+        tk.Label(self,text="Barcdoe").pack()
+        e2 = Entry(self).pack()
+
+        tk.Label(self,text="Students Level").pack()
+        e3 = Entry(self).pack()
+
+        tk.Button(self, text="Submit",width
+=10,command=AddStudent.addStudentToDB).pack()
+        tk.Button(self, text="Return to main page",command=lambda:
+master.switch_frame(StartPage)).pack()
+
+    def addStudentToDB(self):
+        name = self.e1.get()
+        barcode = self.e2.get()
+        level = self.e3.get()
+        update_firebase(name,barcode,level)
+
+class RemoveStudent(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        tk.Label(self, text="Scan barcode of student to
+remove").pack(side="top", fill="x", pady=10)
+
+        ##take input and update database
+
+
+        tk.Button(self, text="Return to start page",command=lambda:
+master.switch_frame(StartPage)).pack()
+
+class FindStudent(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        tk.Label(self, text="Scan the barcode of the student you would
+like to find").pack(side="top", fill="x", pady=10)
+
+        ##take input and update database
+
+
+        tk.Button(self, text="Return to start page",command=lambda:
+master.switch_frame(StartPage)).pack()
+
+class OfflineMode(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        tk.Label(self, text="Welcome to Offline
+Mode").pack(side="top", fill="x", pady=10)
+
+        ##take input and update database
+
+
+        tk.Button(self, text="Return to start page",command=lambda:
+master.switch_frame(StartPage)).pack()
+
+if __name__ == "__main__":
+    app = SampleApp()
     file=open("barcodes.text","a")
     char = ''
 
-    addButton = Button(root,text="Add Student",command=add_Student)
-    addButton.pack()
-
-    getButton = Button(root,text="Get Database",command=get_DataBase)
-    getButton.pack()
-
-    findButton = Button(root,text="Find Student",command=find_Student)
-    findButton.pack()
-
-    updateButton = Button(root,text="Update Student",command=update_Student)
-    updateButton.pack()
-
-    deleteButton = Button(root,text="Delete Student",command=remove_Student)
-    deleteButton.pack()
-
-    showButton = Button(root,text="Show students",command=printToGUI)
-    showButton.pack()
-
-    writeButton = Button(root,text="Write To File",command=write_To_File)
-    writeButton.pack()
-
-    endButton = Button(root,text="End Program",command=root.destroy)
-    endButton.pack()
-
-
     file.close()
-    root.mainloop()
+
+    app.mainloop()
