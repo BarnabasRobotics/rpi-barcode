@@ -6,30 +6,23 @@ from Tkinter import *
 import Tkinter as tk
 from firebase import firebase
 
-
+frameData = ""
+found = False
 
 firebase=firebase.FirebaseApplication('https://rpi-barcode.firebaseio.com/',None)
 
 def barcode_reader():
-    """Barcode code obtained from 'brechmos'
+    """Barcode code obtained from 'brechmos' 
     https://www.raspberrypi.org/forums/viewtopic.php?f=45&t=55100"""
-    hid = {4: 'a', 5: 'b', 6: 'c', 7: 'd', 8: 'e', 9: 'f', 10: 'g',
-11: 'h', 12: 'i', 13: 'j', 14: 'k', 15: 'l', 16: 'm',
-           17: 'n', 18: 'o', 19: 'p', 20: 'q', 21: 'r', 22: 's', 23:
-'t', 24: 'u', 25: 'v', 26: 'w', 27: 'x', 28: 'y',
-           29: 'z', 30: '1', 31: '2', 32: '3', 33: '4', 34: '5', 35:
-'6', 36: '7', 37: '8', 38: '9', 39: '0', 44: ' ',
-           45: '-', 46: '=', 47: '[', 48: ']', 49: '\\', 51: ';', 52:
-'\'', 53: '~', 54: ',', 55: '.', 56: '/'}
+    hid = {4: 'a', 5: 'b', 6: 'c', 7: 'd', 8: 'e', 9: 'f', 10: 'g', 11: 'h', 12: 'i', 13: 'j', 14: 'k', 15: 'l', 16: 'm',
+           17: 'n', 18: 'o', 19: 'p', 20: 'q', 21: 'r', 22: 's', 23: 't', 24: 'u', 25: 'v', 26: 'w', 27: 'x', 28: 'y',
+           29: 'z', 30: '1', 31: '2', 32: '3', 33: '4', 34: '5', 35: '6', 36: '7', 37: '8', 38: '9', 39: '0', 44: ' ',
+           45: '-', 46: '=', 47: '[', 48: ']', 49: '\\', 51: ';', 52: '\'', 53: '~', 54: ',', 55: '.', 56: '/'}
 
-    hid2 = {4: 'A', 5: 'B', 6: 'C', 7: 'D', 8: 'E', 9: 'F', 10: 'G',
-11: 'H', 12: 'I', 13: 'J', 14: 'K', 15: 'L', 16: 'M',
-            17: 'N', 18: 'O', 19: 'P', 20: 'Q', 21: 'R', 22: 'S', 23:
-'T', 24: 'U', 25: 'V', 26: 'W', 27: 'X', 28: 'Y',
-            29: 'Z', 30: '!', 31: '@', 32: '#', 33: '$', 34: '%', 35:
-'^', 36: '&', 37: '*', 38: '(', 39: ')', 44: ' ',
-            45: '_', 46: '+', 47: '{', 48: '}', 49: '|', 51: ':', 52:
-'"', 53: '~', 54: '<', 55: '>', 56: '?'}
+    hid2 = {4: 'A', 5: 'B', 6: 'C', 7: 'D', 8: 'E', 9: 'F', 10: 'G', 11: 'H', 12: 'I', 13: 'J', 14: 'K', 15: 'L', 16: 'M',
+            17: 'N', 18: 'O', 19: 'P', 20: 'Q', 21: 'R', 22: 'S', 23: 'T', 24: 'U', 25: 'V', 26: 'W', 27: 'X', 28: 'Y',
+            29: 'Z', 30: '!', 31: '@', 32: '#', 33: '$', 34: '%', 35: '^', 36: '&', 37: '*', 38: '(', 39: ')', 44: ' ',
+            45: '_', 46: '+', 47: '{', 48: '}', 49: '|', 51: ':', 52: '"', 53: '~', 54: '<', 55: '>', 56: '?'}
 
     fp = open('/dev/hidraw0', 'rb')
 
@@ -111,7 +104,7 @@ def update_Student():
     print("Please scan barcode of student you would like to Update: ")
     ss = barcode_reader()
     buff = raw_input()
-
+    
     print 'Updated'
 
 def find_Student():
@@ -124,12 +117,12 @@ def find_Student():
 
 def parse_Json():
     """TODO: Find a better way to parse it"""
-
+    
     data = firebase.get('',None)
     parsed_json = json.loads(data)
 
     #print(parsed_json['Name'])
-
+    
     for key in data['Student']:
         print key
 
@@ -142,8 +135,8 @@ def write_To_File():
 def printToGUI():
     with open("barcodes.text","r")as f:
         Label(root,text=f.read()).pack()
-
-
+    
+   
 class SampleApp(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
@@ -153,34 +146,29 @@ class SampleApp(tk.Tk):
     def switch_frame(self, frame_class):
         """Destroys current frame and replaces it with a new one."""
         new_frame = frame_class(self)
-        if self._frame is not None:
-            self._frame.destroy()
+        #if self._frame is not None:
+        #    self._frame.destroy()
         self._frame = new_frame
         self._frame.pack()
 
 class StartPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        tk.Label(self, text="Welcom to the main
-menu").pack(side="top", fill="x", pady=10)
-        tk.Button(self, text="Add a Student",command=lambda:
-master.switch_frame(AddStudent)).pack()
+        tk.Label(self, text="Welcom to the main menu").pack(side="top", fill="x", pady=10)
+        tk.Button(self, text="Add a Student",command=lambda: master.switch_frame(AddStudent)).pack()
+        
+        tk.Button(self, text="Remove a Student",command=lambda: master.switch_frame(RemoveStudent)).pack()
 
-        tk.Button(self, text="Remove a Student",command=lambda:
-master.switch_frame(RemoveStudent)).pack()
+        tk.Button(self, text="Find Student",command=lambda: master.switch_frame(FindStudent)).pack()
 
-        tk.Button(self, text="Find Student",command=lambda:
-master.switch_frame(FindStudent)).pack()
-
-        tk.Button(self, text="Offline Mode",command=lambda:
-master.switch_frame(OfflineMode)).pack()
+        tk.Button(self, text="Offline Mode",command=lambda: master.switch_frame(OfflineMode)).pack()
 
         getButton = Button(self,text="Get Database",command=get_DataBase)
         #getButton.pack()
-
+        
         updateButton = Button(self,text="Update Student",command=update_Student)
         #updateButton.pack()
-
+        
         showButton = Button(self,text="Show students",command=printToGUI)
         #showButton.pack()
 
@@ -190,70 +178,78 @@ master.switch_frame(OfflineMode)).pack()
         #endButton = Button(self,text="End Program",command=app.destroy).pack()
 
 class AddStudent(tk.Frame):
+
     def __init__(self, master):
+        found = True
+        name=""
+        code=""
+        level=""
+        
         tk.Frame.__init__(self, master)
-
+        
         tk.Label(self, text="Name").pack(side="top", fill="x", pady=10)
-        e1 = Entry(self).pack()
-
+        e1 = tk.Entry(self)
+        e1.pack()
         tk.Label(self,text="Barcdoe").pack()
-        e2 = Entry(self).pack()
+        e2 = tk.Entry(self)
+        e2.pack()
 
         tk.Label(self,text="Students Level").pack()
-        e3 = Entry(self).pack()
+        e3 = tk.Entry(self)
+        e3.pack()
 
-        tk.Button(self, text="Submit",width
-=10,command=AddStudent.addStudentToDB).pack()
-        tk.Button(self, text="Return to main page",command=lambda:
-master.switch_frame(StartPage)).pack()
+        if(found):
+            name=e1.get()
+            code=e2.get()
+            level=e3.get()
+            found=False
+        
+        tk.Button(self, text="Submit",width =10,command=lambda: master.switch_frame(AddStudentToDB)).pack()
+        tk.Button(self, text="Return to main page",command=lambda: master.switch_frame(StartPage)).pack()
 
-    def addStudentToDB(self):
-        name = self.e1.get()
-        barcode = self.e2.get()
-        level = self.e3.get()
-        update_firebase(name,barcode,level)
+        
+class AddStudentToDB(tk.Frame):
+    def _init_(self,master):
+        tk.Label(self, text="Welcome to the send Add student frame").pack()
+        tk.Label(self, text= AddStudent.e1.get()).pack
 
 class RemoveStudent(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        tk.Label(self, text="Scan barcode of student to
-remove").pack(side="top", fill="x", pady=10)
+        tk.Label(self, text="Scan barcode of student to remove").pack(side="top", fill="x", pady=10)
 
         ##take input and update database
-
-
-        tk.Button(self, text="Return to start page",command=lambda:
-master.switch_frame(StartPage)).pack()
+        e1 = Entry(self).pack()
+        
+        tk.Button(self, text="Remove",width =10).pack()
+        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
 
 class FindStudent(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        tk.Label(self, text="Scan the barcode of the student you would
-like to find").pack(side="top", fill="x", pady=10)
+        tk.Label(self, text="Scan the barcode of the student you would like to find").pack(side="top", fill="x", pady=10)
 
         ##take input and update database
+        e1 = Entry(self).pack()
 
-
-        tk.Button(self, text="Return to start page",command=lambda:
-master.switch_frame(StartPage)).pack()
+        tk.Button(self, text="Find",width =10).pack()
+        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
 
 class OfflineMode(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        tk.Label(self, text="Welcome to Offline
-Mode").pack(side="top", fill="x", pady=10)
+        tk.Label(self, text="Welcome to Offline Mode").pack(side="top", fill="x", pady=10)
 
         ##take input and update database
 
-
-        tk.Button(self, text="Return to start page",command=lambda:
-master.switch_frame(StartPage)).pack()
+        
+        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
 
 if __name__ == "__main__":
     app = SampleApp()
     file=open("barcodes.text","a")
     char = ''
-
+    app.title("Barcode Reader")
     file.close()
 
     app.mainloop()
