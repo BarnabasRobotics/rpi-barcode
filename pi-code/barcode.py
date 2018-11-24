@@ -220,7 +220,7 @@ class AddStudent(tk.Frame):
             code = e2.get()
             level = e3.get()
     
-            found=False
+            found = False
 
         tk.Button(self, text = "Submit", width = 10, command = lambda: master.switch_frame(AddStudentToDB)).pack()
 
@@ -228,8 +228,8 @@ class AddStudent(tk.Frame):
 
 class AddStudentToDB(tk.Frame):
 
-    def __init__(self,master):
-        
+    def __init__(self, master):
+    
         tk.Label(self, text = "Welcome to the send add student frame").pack()
         
         tk.Label(self, text = AddStudent.e1.get()).pack()
@@ -242,19 +242,12 @@ class RemoveStudent(tk.Frame):
 
         tk.Label(self, text = "Scan barcode of a student to remove that student").pack(side = "top", fill = "x", pady = 10)
 
-
-
         ##take input and update database
-
         e1 = Entry(self).pack()
 
-        
+        tk.Button(self, text="Remove", width = 10).pack()
 
-        tk.Button(self, text="Remove",width =10).pack()
-
-        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
-
-
+        tk.Button(self, text = "Return to start page", command = lambda: master.switch_frame(StartPage)).pack()
 
 class FindStudent(tk.Frame):
 
@@ -262,21 +255,14 @@ class FindStudent(tk.Frame):
 
         tk.Frame.__init__(self, master)
 
-        tk.Label(self, text="Scan the barcode of the student you would like to find").pack(side="top", fill="x", pady=10)
-
-
+        tk.Label(self, text = "Scan the barcode of the student you would like to find").pack(side = "top", fill=  "x", pady = 10)
 
         ##take input and update database
-
         e1 = Entry(self).pack()
 
+        tk.Button(self, text = "Find",width = 10).pack()
 
-
-        tk.Button(self, text="Find",width =10).pack()
-
-        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
-
-
+        tk.Button(self, text = "Return to start page", command = lambda: master.switch_frame(StartPage)).pack()
 
 class OfflineMode(tk.Frame):
 
@@ -284,32 +270,18 @@ class OfflineMode(tk.Frame):
 
         tk.Frame.__init__(self, master)
 
-        tk.Label(self, text="Welcome to Offline Mode").pack(side="top", fill="x", pady=10)
-
-
+        tk.Label(self, text = "Welcome to Offline Mode").pack(side = "top", fill = "x", pady = 10)
 
         ##take input and update database
-
-
-
-        
-
-        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
-
-
+        tk.Button(self, text = "Return to start page", command = lambda: master.switch_frame(StartPage)).pack()
 
 if __name__ == "__main__":
 
     app = SampleApp()
 
-    file=open("barcodes.text","a")
-
+    file = open("barcodes.text", "a")
     char = ''
-
     app.title("Barcode Reader")
-
     file.close()
-
-
 
     app.mainloop()
