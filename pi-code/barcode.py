@@ -1,12 +1,11 @@
 #!/usr/bin/python
+
 import sys
 import json
 from Tkinter import *
 import Tkinter as tk
 from firebase import firebase
 
-frameData = ""
-found = False
 firebase = firebase.FirebaseApplication("https://rpi-barcode.firebaseio.com/", None)
 
 def barcode_reader():
@@ -157,10 +156,8 @@ class SampleApp(tk.Tk):
     def switch_frame(self, frame_class):
         """Destroys current frame and replaces it with a new one."""
         new_frame = frame_class(self)
-
-        #if self._frame is not None:
-        #    self._frame.destroy()
-
+        if self._frame is not None:
+            self._frame.destroy()
         self._frame = new_frame
         self._frame.pack()
 
@@ -168,71 +165,67 @@ class StartPage(tk.Frame):
     def __init__(self, master):
         
         tk.Frame.__init__(self, master)
+        tk.Label(self, text="Welcom to the main menu").pack(side="top", fill="x", pady=10)
+        tk.Button(self, text="Add a Student",command=lambda: master.switch_frame(AddStudent)).pack()
+        
+        tk.Button(self, text="Remove a Student",command=lambda: master.switch_frame(RemoveStudent)).pack()
 
-        tk.Label(self, text="Welcome to the main menu").pack(side = "top", fill = "x", pady = 10)
+        tk.Button(self, text="Find Student",command=lambda: master.switch_frame(FindStudent)).pack()
 
-        tk.Button(self, text = "Add a Student", command = lambda: master.switch_frame(AddStudent)).pack()
+        tk.Button(self, text="Offline Mode",command=lambda: master.switch_frame(OfflineMode)).pack()
 
-        tk.Button(self, text = "Remove a Student", command = lambda: master.switch_frame(RemoveStudent)).pack()
-
-        tk.Button(self, text = "Find Student", command = lambda: master.switch_frame(FindStudent)).pack()
-
-        tk.Button(self, text = "Offline Mode", command = lambda: master.switch_frame(OfflineMode)).pack()
-
-        getButton = Button(self, text = "Get Database",command = get_DataBase)
+        getButton = Button(self,text="Get Database",command=get_DataBase)
         #getButton.pack()
-
-        updateButton = Button(self, text = "Update Student", command = update_Student)
+        
+        updateButton = Button(self,text="Update Student",command=update_Student)
         #updateButton.pack()
-
-        showButton = Button(self, text = "Show students", command = printToGUI)
+        
+        showButton = Button(self,text="Show students",command=printToGUI)
         #showButton.pack()
 
-        writeButton = Button(self, text = "Write To File", command = write_To_File)
+        writeButton = Button(self,text="Write To File",command=write_To_File)
         #writeButton.pack()
 
-        #endButton = Button(self, text = "End Program", command = app.destroy).pack()
+        #endButton = Button(self,text="End Program",command=app.destroy).pack()
 
 class AddStudent(tk.Frame):
-    
-    def __init__(self, master):
-        found = True
-        name = ""
-        code = ""
-        level = ""
-
-        tk.Frame.__init__(self, master)
-
-        tk.Label(self, text = "Name").pack(side = "top", fill = "x", pady = 10)
-        e1 = tk.Entry(self)
-        e1.pack()
-
-        tk.Label(self, text = "Barcode").pack()
-        e2 = tk.Entry(self)
-        e2.pack()
-
-        tk.Label(self, text = "Student's Level").pack()
-        e3 = tk.Entry(self)
-        e3.pack()
-
-        if(found):
-            name = e1.get()
-            code = e2.get()
-            level = e3.get()
-    
-            found = False
-
-        tk.Button(self, text = "Submit", width = 10, command = lambda: master.switch_frame(AddStudentToDB)).pack()
-
-        tk.Button(self, text = "Return to main page", command = lambda: master.switch_frame(StartPage)).pack()
-
-class AddStudentToDB(tk.Frame):
 
     def __init__(self, master):
-    
-        tk.Label(self, text = "Welcome to the send add student frame").pack()
         
-        tk.Label(self, text = AddStudent.e1.get()).pack()
+        tk.Frame.__init__(self, master)
+        self.master = master
+        
+        tk.Label(self, text="Name").pack()
+        self.entryBox = Entry(self)
+        self.entryBox.pack(side = TOP, padx=10, pady=10)
+        tk.Label(self,text="Barcdoe").pack()
+        self.entryBox1 = Entry(self)
+        self.entryBox1.pack(side = TOP, padx=10, pady=10)
+        tk.Label(self,text="Students Level").pack()
+        self.entryBox2 = Entry(self)
+        self.entryBox2.pack(side = TOP, padx=10, pady=10)
+
+        tk.Button(self, text="Submit",width =10,command=self.add).pack()
+        tk.Button(self, text="Return to main page",command=lambda: master.switch_frame(StartPage)).pack()
+
+    def add(self):
+        print "Hello General Kenobi"
+
+        name = self.entryBox.get().strip()
+        print name
+        barcode = self.entryBox1.get().strip()
+        print barcode
+        level = self.entryBox2.get().strip()
+        print level
+
+
+
+class AddStudentDB(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        tk.Label(self, text="Welcome to the send Add student frame").pack()
+        tk.Label(self, text= AddStudent.e1.get()).pack
+        tk.Button(self, text="Press me!",width=10).pack()
 
 class RemoveStudent(tk.Frame):
     
