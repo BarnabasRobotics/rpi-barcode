@@ -198,7 +198,7 @@ class AddStudent(tk.Frame):
         tk.Label(self, text="Name").pack()
         self.entryBox = Entry(self)
         self.entryBox.pack(side = TOP, padx=10, pady=10)
-        tk.Label(self,text="Barcdoe").pack()
+        tk.Label(self,text="Barcode").pack()
         self.entryBox1 = Entry(self)
         self.entryBox1.pack(side = TOP, padx=10, pady=10)
         tk.Label(self,text="Students Level").pack()
@@ -209,53 +209,74 @@ class AddStudent(tk.Frame):
         tk.Button(self, text="Return to main page",command=lambda: master.switch_frame(StartPage)).pack()
 
     def add(self):
-        print "Hello General Kenobi"
-
+        popup = tk.Tk()
         name = self.entryBox.get().strip()
-        print name
+        label = tk.Label(popup, text=name+" added!")
+        label.pack()
+        #print name
         barcode = self.entryBox1.get().strip()
-        print barcode
+        #print barcode
         level = self.entryBox2.get().strip()
-        print level
+        #print level
+        self.entryBox.delete(0,'end')
+        self.entryBox1.delete(0,'end')
+        self.entryBox2.delete(0,'end')
+        
+        update_firebase(name,barcode,level)
+        endButton = Button(popup,text="OK",command=popup.destroy).pack()
+        popup.mainloop()
 
-
-
-class AddStudentDB(tk.Frame):
-    def __init__(self, master):
-        tk.Frame.__init__(self, master)
-        tk.Label(self, text="Welcome to the send Add student frame").pack()
-        tk.Label(self, text= AddStudent.e1.get()).pack
-        tk.Button(self, text="Press me!",width=10).pack()
 
 class RemoveStudent(tk.Frame):
-    
     def __init__(self, master):
-
         tk.Frame.__init__(self, master)
+        tk.Label(self,text="Barcdoe of Student you would like to remove").pack()
+        self.entryBox = Entry(self)
+        self.entryBox.pack(side = TOP, padx=10, pady=10)
+        
+        tk.Button(self, text="Submit",width =10,command=self.remove).pack()
+        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
 
-        tk.Label(self, text = "Scan barcode of a student to remove that student").pack(side = "top", fill = "x", pady = 10)
+    def remove(self):
+        popup = tk.Tk()
 
-        ##take input and update database
-        e1 = Entry(self).pack()
+        barcode = self.entryBox.get().strip()
+        #print barcode
 
-        tk.Button(self, text="Remove", width = 10).pack()
+        studentInfo = firebase.get(('/Student/'+barcode),'Name')
 
-        tk.Button(self, text = "Return to start page", command = lambda: master.switch_frame(StartPage)).pack()
+        self.entryBox.delete(0,'end')
+        firebase.delete('/Student',barcode)
+
+        
+        label = tk.Label(popup, text=studentInfo+" removed!")
+        label.pack()
+
+        endButton = Button(popup,text="OK",command=popup.destroy).pack()
+        popup.mainloop()
 
 class FindStudent(tk.Frame):
-
     def __init__(self, master):
-
         tk.Frame.__init__(self, master)
+        tk.Label(self, text="Scan the barcode of the student you would like to find").pack(side="top", fill="x", pady=10)
 
-        tk.Label(self, text = "Scan the barcode of the student you would like to find").pack(side = "top", fill=  "x", pady = 10)
+        self.entryBox = Entry(self)
+        self.entryBox.pack(side = TOP, padx=10, pady=10)
 
-        ##take input and update database
-        e1 = Entry(self).pack()
+        tk.Button(self, text="Submit",width =10,command=self.find).pack()
+        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
 
-        tk.Button(self, text = "Find",width = 10).pack()
-
-        tk.Button(self, text = "Return to start page", command = lambda: master.switch_frame(StartPage)).pack()
+    def find(self):
+        popup = tk.Tk()
+        label = tk.Label(popup, text="Person found!")
+        label.pack()
+        barcode = self.entryBox.get().strip()
+        #print barcode
+        self.entryBox.delete(0,'end')
+        studentInfo = firebase.get(('/Student/'+barcode),None)
+        print studentInfo
+        endButton = Button(popup,text="OK",command=popup.destroy).pack()
+        popup.mainloop()
 
 class OfflineMode(tk.Frame):
 
