@@ -171,6 +171,8 @@ class StartPage(tk.Frame):
         tk.Button(self, text="Remove a Student",command=lambda: master.switch_frame(RemoveStudent)).pack()
 
         tk.Button(self, text="Find Student",command=lambda: master.switch_frame(FindStudent)).pack()
+		
+		showButton = Button(self,text="Show students",command=lambda: master.switch_frame(ShowAll)).pack()
 
         tk.Button(self, text="Offline Mode",command=lambda: master.switch_frame(OfflineMode)).pack()
 
@@ -277,6 +279,53 @@ class FindStudent(tk.Frame):
         print studentInfo
         endButton = Button(popup,text="OK",command=popup.destroy).pack()
         popup.mainloop()
+
+class FindStudent(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        tk.Label(self, text="Scan the barcode of the student you would like to find").pack(side="top", fill="x", pady=10)
+
+        self.entryBox = Entry(self)
+        self.entryBox.pack(side = TOP, padx=10, pady=10)
+
+        tk.Button(self, text="Submit",width =10,command=self.find).pack()
+        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
+
+    def find(self):
+        popup = tk.Tk()
+        barcode = self.entryBox.get().strip()
+        #print barcode
+        self.entryBox.delete(0,'end')
+        studentInfo = firebase.get(('/Student/'+barcode),'Name')
+        if(studentInfo==None):
+            studentInfo = "Student Not"
+        label = tk.Label(popup, text=studentInfo + " found")
+        label.pack()
+        endButton = Button(popup,text="OK",command=popup.destroy).pack()
+        popup.mainloop()
+
+
+class ShowAll(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self,master)
+        tk.Label(self, text="Show All").pack(side="top", fill="x",pady=10)
+        T = Text(self, height=2, width=30)
+        T.pack()
+        data = firebase.get('',None)
+
+
+        #todo: get data from firebase into a list
+        #       and format it so that it can be
+        #       inserted into the textbox gui
+        
+        numbers = []
+        for key in data['Student']:
+            numbers.append(key)
+        data = firebase.get('Student/','Name')
+        for key in data:
+            print key
+        T.insert(END, numbers+"\n")
+
 
 class OfflineMode(tk.Frame):
 
