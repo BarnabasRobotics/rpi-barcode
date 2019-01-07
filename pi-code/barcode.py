@@ -6,7 +6,7 @@ from Tkinter import *
 import Tkinter as tk
 from firebase import firebase
 
-firebase = firebase.FirebaseApplication("https://rpi-barcode.firebaseio.com/", None)
+firebase=firebase.FirebaseApplication('https://rpi-barcode.firebaseio.com/',None)
 
 
 
@@ -50,7 +50,7 @@ def barcode_reader():
                 ##  we are done looking for characters
                 if int(ord(c)) == 40:
                     done = True
-                    break;
+                    break
 
                 ##  If we are shifted then we have to
                 ##  use the hid2 characters.
@@ -79,41 +79,26 @@ def barcode_reader():
                         ss += hid[int(ord(c))]
     return ss
 
-def update_firebase(name,ss,grade):
+def update_firebase(name, barcode, grade):
     data = {"Name":name, 'Grade':grade,'CheckIn':'0'}
-    sent = json.dumps(data)
-    firebase.put('','Student/'+ss,data)
 
-def update_text(name,ss,grade):
+    firebase.put('', 'Student/' + barcode, data)
+
+def update_text(name, barcode, grade):
     data = {ss:{"Name":name, 'Grade':grade,'CheckIn':'0'}}
-    
+
     payload.update(data)
 
     with open("barcode.json","w") as f:
         json.dump(payload, f)
 
-def get_DataBase():
+def get_database():
     result = firebase.get('/Student',None)
     insert("end",result)
     return result
 
-def remove_Student():
-    print("Please scan barcode of student you would like to remove: ")
-    ss = barcode_reader()
-    buff = raw_input()
-    firebase.delete('/Student',ss)
-    print 'Removed'
 
-
-def find_Student():
-    print("Please scan barcode: ")
-    ss = barcode_reader()
-    buff = raw_input()
-    print ''
-    studentInfo = firebase.get(('/Student/'+ss),None)
-    print studentInfo
-
-def findText(barcode):
+def find_text_in_text(barcode):
 
     name = payload[barcode]['Name']
 
@@ -131,28 +116,25 @@ def remove_from_text(barcode):
     return name
 
 
-def updateDB():
+def update_database():
     firebase.delete('',None)
     for key in payload:
-        print key
+        #print key
         data = {"Name":payload[key]['Name'], 'Grade':payload[key]['Grade'],'CheckIn':payload[key]['CheckIn']}
         sent = json.dumps(data)
-        firebase.put('','Student/'+key,data)
+        firebase.put('', 'Student/' + key, data)
     
 def write_To_File():
     data = firebase.get('Student/',None)
     with open("barcode.json", "w") as outfile:
         json.dump(data, outfile)
 
-    print "File Updated"
-    print json.dumps(data, sort_keys=True, indent=4, separators=(',',':'))
-
-def matchToDB():
+def match_to_database():
     data = firebase.get('Student/',None)
     with open("barcode.json") as outfile:
-        datafile = json.load(outfile)
+        data_file = json.load(outfile)
 
-    return ordered(data) == ordered(datafile)
+    return ordered(data) == ordered(data_file)
     
 def ordered(obj):
     if isinstance(obj,dict):
@@ -162,11 +144,11 @@ def ordered(obj):
     else:
         return obj
 
-class SampleApp(tk.Tk):
+class sample_app(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
         self._frame = None
-        self.switch_frame(StartPage)
+        self.switch_frame(start_page)
 
     def switch_frame(self, frame_class):
         """Destroys current frame and replaces it with a new one."""
@@ -176,21 +158,22 @@ class SampleApp(tk.Tk):
         self._frame = new_frame
         self._frame.pack()
 
-class StartPage(tk.Frame):
+class start_page(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        tk.Label(self, text="Welcom to the main menu").pack(side="top", fill="x", pady=10)
+        tk.Label(self, text = "Welcom to the main menu").pack(side = "top", fill = "x", pady = 10)
+
         global offline
 
-        tk.Button(self, text="Add a Student",command=lambda: master.switch_frame(AddStudent)).pack()
+        tk.Button(self, text = "Add a Student",command=lambda: master.switch_frame(add_student)).pack()
 
-        tk.Button(self, text="Remove a Student",command=lambda: master.switch_frame(RemoveStudent)).pack()
+        tk.Button(self, text = "Remove a Student",command=lambda: master.switch_frame(remove_student)).pack()
 
-        tk.Button(self, text="Find Student",command=lambda: master.switch_frame(FindStudent)).pack()
+        tk.Button(self, text = "Find Student",command=lambda: master.switch_frame(find_student)).pack()
 
-        tk.Button(self,text="Show students",command=lambda: master.switch_frame(ShowAll)).pack()
+        tk.Button(self, text = "Show students",command=lambda: master.switch_frame(show_all)).pack()
 
-        tk.Button(self, text="Check In",command=lambda: master.switch_frame(CheckIn)).pack()
+        tk.Button(self, text = "Check In",command=lambda: master.switch_frame(check_in)).pack()
 
             
         if not offline:
@@ -204,25 +187,25 @@ class StartPage(tk.Frame):
 
         #endButton = Button(self,text="End Program",command=app.destroy).pack()
 
-class AddStudent(tk.Frame):
+class add_student(tk.Frame):
 
     def __init__(self, master):
         global offline
         tk.Frame.__init__(self, master)
         self.master = master
-        tk.Label(self, text="Name").pack()
+        tk.Label(self, text = "Name").pack()
         self.entryBox = Entry(self)
-        self.entryBox.pack(side = TOP, padx=10, pady=10)
-        tk.Label(self,text="Barcode").pack()
+        self.entryBox.pack(side = TOP, padx = 10, pady = 10)
+        tk.Label(self, text = "Barcode").pack()
         self.entryBox1 = Entry(self)
-        self.entryBox1.pack(side = TOP, padx=10, pady=10)
-        tk.Label(self,text="Students Level").pack()
+        self.entryBox1.pack(side = TOP, padx = 10, pady = 10)
+        tk.Label(self, text = "Students Level").pack()
         self.entryBox2 = Entry(self)
-        self.entryBox2.pack(side = TOP, padx=10, pady=10)
+        self.entryBox2.pack(side = TOP, padx = 10, pady = 10)
 
         
-        tk.Button(self, text="Submit",width =10,command=self.add).pack()
-        tk.Button(self, text="Return to main page",command=lambda: master.switch_frame(StartPage)).pack()
+        tk.Button(self, text = "Submit", width = 10, command = self.add).pack()
+        tk.Button(self, text = "Return to main page", command = lambda: master.switch_frame(start_page)).pack()
 
     def add(self):
         popup = tk.Tk()
@@ -239,11 +222,11 @@ class AddStudent(tk.Frame):
             update_firebase(name,barcode,level)
         else:
             update_text(name,barcode,level)
-        endButton = Button(popup,text="OK",command=popup.destroy).pack()
+        end_button = Button(popup,text="OK",command=popup.destroy).pack()
         popup.mainloop()
 
 
-class RemoveStudent(tk.Frame):
+class remove_student(tk.Frame):
     def __init__(self, master):
         global offline
         tk.Frame.__init__(self, master)
@@ -259,13 +242,13 @@ class RemoveStudent(tk.Frame):
 
         barcode = self.entryBox.get().strip()
         if not offline:
-            studentInfo = firebase.get(('/Student/'+barcode),'Name')
+            student_info = firebase.get(('/Student/'+barcode),'Name')
 
             self.entryBox.delete(0,'end')
             firebase.delete('/Student',barcode)
 
 
-            label = tk.Label(popup, text=studentInfo+" removed!")
+            label = tk.Label(popup, text=student_info+" removed!")
             label.pack()
 
         else:
@@ -273,10 +256,10 @@ class RemoveStudent(tk.Frame):
             label = tk.Label(popup, text=remove_from_text(barcode)+" removed!")
             label.pack()
 
-        endButton = Button(popup,text="OK",command=popup.destroy).pack()
+        end_button = Button(popup,text="OK",command=popup.destroy).pack()
         popup.mainloop()
 
-class FindStudent(tk.Frame):
+class find_student(tk.Frame):
     def __init__(self, master):
         global offline
         tk.Frame.__init__(self, master)
@@ -286,7 +269,7 @@ class FindStudent(tk.Frame):
         self.entryBox.pack(side = TOP, padx=10, pady=10)
 
         tk.Button(self, text="Submit",width =10,command=self.find).pack()
-        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
+        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(start_page)).pack()
 
     def find(self):
         popup = tk.Tk()
@@ -294,22 +277,22 @@ class FindStudent(tk.Frame):
         self.entryBox.delete(0,'end')
 
         if not offline:
-            studentInfo = firebase.get(('/Student/'+barcode),'Name')
+            student_info = firebase.get(('/Student/'+barcode),'Name')
         else:
-            studentInfo = findText(barcode)
-        if(studentInfo==None):
-            studentInfo = "Student Not"
-        label = tk.Label(popup, text=studentInfo + " found")
+            student_info = find_student_in_text(barcode)
+        if(student_info==None):
+            student_info = "Student Not"
+        label = tk.Label(popup, text = student_info + " found")
         label.pack()
-        endButton = Button(popup,text="OK",command=popup.destroy).pack()
+        end_button = Button(popup,text="OK",command=popup.destroy).pack()
         popup.mainloop()
 
 
-class ShowAll(tk.Frame):
+class show_all(tk.Frame):
     def __init__(self, master):
         global offline
         tk.Frame.__init__(self,master)
-        tk.Label(self, text="Show All").pack(side="top", fill="x",pady=10)
+        tk.Label(self, text = "Show All").pack(side = "top", fill = "x",pady = 10)
         T = Text(self)
         T.pack()
 
@@ -320,10 +303,10 @@ class ShowAll(tk.Frame):
             T.insert(END, "ID\t\t\tName\t\t\tGrade\t\t\tCheck in")
             for key in data['Student']:
 
-                names= firebase.get('/Student/'+key,'Name')
-                grades= firebase.get('/Student/'+key,'Grade')
-                checks= firebase.get('/Student/'+key,'CheckIn')
-            T.insert(END,key+'\t\t\t'+names+'\t\t\t'+grades+'\t\t\t'+checks+'\n')
+                names= firebase.get('/Student/' + key,'Name')
+                grades= firebase.get('/Student/' + key,'Grade')
+                checks= firebase.get('/Student/' + key,'CheckIn')
+            T.insert(END, key + '\t\t\t' + names + '\t\t\t' + grades + '\t\t\t' + checks + '\n')
 
         else:
 
@@ -335,104 +318,104 @@ class ShowAll(tk.Frame):
                 names= y["Name"]
                 grades= y["Grade"]
                 checks= y["CheckIn"]
-                T.insert(END,key+'\t\t\t'+names+'\t\t\t'+grades+'\t\t\t'+checks+'\n')
+                T.insert(END, key + '\t\t\t' + names + '\t\t\t' + grades + '\t\t\t' + checks + '\n')
 
 
 
-        tk.Button(self, text="Return to main page",command=lambda: master.switch_frame(StartPage)).pack()
+        tk.Button(self, text= "Return to main page", command=lambda: master.switch_frame(start_page)).pack()
 
-class CheckIn(tk.Frame):
+class check_in(tk.Frame):
     def __init__(self, master):
         global offline
         tk.Frame.__init__(self, master)
-        tk.Label(self, text="Scan the barcode of the student you would like to Check In").pack(side="top", fill="x", pady=10)
+        tk.Label(self, text= "Scan the barcode of the student you would like to Check In").pack(side = "top", fill = "x", pady = 10)
 
         self.entryBox = Entry(self)
-        self.entryBox.pack(side = TOP, padx=10, pady=10)
+        self.entryBox.pack(side = TOP, padx = 10 , pady = 10)
 
-        tk.Button(self, text="Submit",width =10,command=self.find).pack()
-        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
+        tk.Button(self, text= "Submit", width =10, command=self.find).pack()
+        tk.Button(self, text= "Return to start page", command=lambda: master.switch_frame(start_page)).pack()
 
     def find(self):
         popup = tk.Tk()
         barcode = self.entryBox.get().strip()
-        self.entryBox.delete(0,'end')
+        self.entryBox.delete(0, 'end')
 
         if not offline:
-            studentInfo = firebase.get(('/Student/'+barcode),'Name')
-            if(studentInfo==None):
-                studentInfo = "Student Not"
+            student_info = firebase.get(('/Student/' + barcode), 'Name')
+            if(student_info==None):
+                student_info = "Student Not"
             else:
-                check= firebase.get('/Student/'+barcode,'CheckIn')
-                name= firebase.get('/Student/'+barcode,'Name')
-                grade= firebase.get('/Student/'+barcode,'Grade')
-                numChecks=int(check)
-                numChecks=numChecks+1
-                data = {"Name":name, 'Grade':grade,'CheckIn':str(numChecks)}
-                firebase.put('','Student/'+barcode,data)
+                check= firebase.get('/Student/' + barcode, 'CheckIn')
+                name= firebase.get('/Student/' + barcode, 'Name')
+                grade= firebase.get('/Student/' + barcode, 'Grade')
+                num_checks=int(check)
+                num_checks=num_checks+1
+                data = {"Name":name, 'Grade':grade,'CheckIn':str(num_checks)}
+                firebase.put('', 'Student/' + barcode, data)
 
         else:
-            studentInfo = None
+            student_info = None
             for key in payload:
                 if barcode == key:
                     check = int(payload[key]['CheckIn'])
                     payload[key]['CheckIn'] = str(check+1)
-                    studentInfo = payload[key]['Name']
+                    student_info = payload[key]['Name']
             
-        label = tk.Label(popup, text=studentInfo + " found")
+        label = tk.Label(popup, text = student_info + " found")
         label.pack()
-        endButton = Button(popup,text="OK",command=popup.destroy).pack()
+        end_button = Button(popup, text= "OK", command= popup.destroy).pack()
         popup.mainloop()
 
 
-class OfflineMode(tk.Frame):
+class offline_mode(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         global offline
         if offline:
-            tk.Label(self, text="Offline Mode is now Active").pack(side="top", fill="x", pady=10)
+            tk.Label(self, text= "Offline Mode is now Active").pack(side = "top", fill = "x", pady = 10)
             offline = False
         else:
-            tk.Label(self, text="Offline Mode is now Deacticated").pack(side="top", fill="x", pady=10)
+            tk.Label(self, text= "Offline Mode is now Deacticated").pack(side = "top", fill = "x", pady = 10)
             offline = True
 
-        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
+        tk.Button(self, text = "Return to start page", command=lambda: master.switch_frame(start_page)).pack()
 
 
 
-class get_Database(tk.Frame):
+class get_database(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        write_To_File()
-        tk.Label(self, text="File Updated").pack(side="top", fill="x", pady=10)
-        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
+        write_To_file()
+        tk.Label(self, text= "File Updated").pack(side="top", fill="x", pady=10)
+        tk.Button(self, text= "Return to start page", command=lambda: master.switch_frame(start_page)).pack()
         
 
 
-class writeToDB(tk.Frame):
+class write_to_database(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        updateDB()
-        tk.Label(self, text="DataBase Updated!").pack(side="top", fill="x", pady=10)
-        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
+        update_database()
+        tk.Label(self, text = "DataBase Updated!").pack(side = "top", fill = "x", pady = 10)
+        tk.Button(self, text = "Return to start page", command = lambda: master.switch_frame(start_page)).pack()
 
         
 
-class matchFileToDB(tk.Frame):
+class match_file_to_database(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        match = matchToDB()
+        match = match_to_database()
         if match:
-            tk.Label(self, text="Matched").pack(side="top", fill="x", pady=10)
+            tk.Label(self, text = "Matched").pack(side = "top", fill = "x", pady = 10)
         else:
-            tk.Label(self, text="Did not Matched").pack(side="top", fill="x", pady=10)
-            tk.Button(self, text="OverWrite Database",command=lambda: master.switch_frame(writeToDB)).pack()
-            tk.Button(self, text="OverWrite Json File",command=lambda: master.switch_frame(get_Database)).pack()
+            tk.Label(self, text = "Did not Matched").pack(side = "top", fill = "x", pady = 10)
+            tk.Button(self, text = "OverWrite Database", command=lambda: master.switch_frame(write_to_database)).pack()
+            tk.Button(self, text = "OverWrite Json File", command=lambda: master.switch_frame(get_database)).pack()
             
-        tk.Button(self, text="Return to start page",command=lambda: master.switch_frame(StartPage)).pack()
+        tk.Button(self, text = "Return to start page", command=lambda: master.switch_frame(start_page)).pack()
 
 if __name__ == "__main__":
-    app = SampleApp()
+    app = sample_app()
     char = ''
     app.title("Barcode Reader")
     app.mainloop()
